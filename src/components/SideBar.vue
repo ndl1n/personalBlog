@@ -4,7 +4,7 @@
       <div @click="goToLogin">
         <font-awesome-icon v-if="mode === 'mode1'" icon="sign-in-alt" class="login-button" />
       </div>
-      <div>
+      <div @click="goToUserDirectory">
         <font-awesome-icon v-if="mode === 'mode2'" icon="cog" class="setting-button" />
       </div>
     </button>
@@ -66,11 +66,16 @@ export default defineComponent({
       router.push('/register')
     }
 
+    const goToUserDirectory = () => {
+      router.push('/user-directory')
+    }
+
     return {
       goToHome,
       goToProfile,
       goToLogin,
-      goToRegister
+      goToRegister,
+      goToUserDirectory
     }
   },
   methods: {

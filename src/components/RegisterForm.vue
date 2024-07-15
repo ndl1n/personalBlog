@@ -21,25 +21,23 @@ import { defineComponent, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
 export default defineComponent({
-  name: 'LoginForm',
+  name: 'RegisterForm',
   setup() {
     const registerInfo = reactive({
       name: '',
       account: '',
-      password: '',
+      // password: '',
       email: '',
       phone: '',
-      birthday: '',
       address: ''
     })
 
     const labels = {
       name: '姓名',
       account: '帳號',
-      password: '密碼',
+      // password: '密碼',
       email: '電子郵件',
       phone: '手機號碼',
-      birthday: '生日',
       address: '通訊地址'
     }
 
