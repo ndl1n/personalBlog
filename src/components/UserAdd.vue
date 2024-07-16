@@ -30,6 +30,7 @@ export default defineComponent({
       user: {
         name: '',
         account: '',
+        password: '',
         email: '',
         phonenum: ''
       }
@@ -44,6 +45,7 @@ export default defineComponent({
     const labels = {
       name: '姓名',
       account: '帳號',
+      password: '密碼',
       email: '電子郵件',
       phonenum: '手機號碼'
     }
@@ -67,6 +69,7 @@ export default defineComponent({
         // 清空表單
         this.user.name = ''
         this.user.account = ''
+        this.user.password = ''
         this.user.email = ''
         this.user.phonenum = ''
         this.goToUserDirectory()

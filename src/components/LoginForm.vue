@@ -3,25 +3,38 @@
     <div class="title">
       <h2>登入</h2>
     </div>
-    <div class="info-container">
-      <div class="info-item" v-for="(label, key) in labels" :key="key">
-        <label :for="key">{{ label }}</label>
-        <input type="text" :id="key" v-model="loginInfo[key]" :placeholder="label" />
+    <form @submit.prevent="login">
+      <div class="info-container">
+        <div class="info-item" v-for="(label, key) in labels" :key="key">
+          <label :for="key">{{ label }}</label>
+          <input
+            :type="key === 'password' ? 'password' : 'text'"
+            :id="key"
+            v-model="loginInfo[key]"
+            :placeholder="label"
+          />
+        </div>
       </div>
-    </div>
-    <div class="buttons">
-      <button class="register-button" @click="login">確定</button>
-      <button class="cancel-button" @click="goToHome">取消</button>
-    </div>
+      <div class="buttons">
+        <button class="register-button" type="submit" :disabled="isFormInvalid">確定</button>
+        <button class="cancel-button" @click="goToHome">取消</button>
+      </div>
+    </form>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import axios, { AxiosError } from 'axios'
 
 export default defineComponent({
   name: 'LoginForm',
+  computed: {
+    isFormInvalid() {
+      return !this.loginInfo.account || !this.loginInfo.password
+    }
+  },
   setup() {
     const loginInfo = reactive({
       account: '',
@@ -39,16 +52,37 @@ export default defineComponent({
       router.push('/')
     }
 
-    const login = () => {
-      // 註冊功能的邏輯
-      console.log('登入資料', loginInfo)
-    }
-
     return {
       loginInfo,
       labels,
-      goToHome,
-      login
+      goToHome
+    }
+  },
+  methods: {
+    async login() {
+      try {
+        const response = await axios.post('http://localhost:8080/api/login', this.loginInfo)
+
+        // 登入成功後的處理
+        console.log('登入成功', response.data)
+        // alert('登入成功')
+        this.goToHome()
+      } catch (error) {
+        const axiosError = error as AxiosError
+        if (axiosError.response) {
+          // 依據後端回傳的狀態碼顯示錯誤訊息
+          if (axiosError.response.status === 404) {
+            alert('帳號不存在')
+          } else if (axiosError.response.status === 401) {
+            alert('密碼錯誤')
+          } else {
+            alert('登入失敗，請稍後再試')
+          }
+        } else {
+          alert('登入失敗，請稍後再試')
+        }
+        console.error('登入錯誤', error)
+      }
     }
   }
 })
@@ -92,6 +126,14 @@ export default defineComponent({
 }
 
 input[type='text'] {
+  width: 80%;
+  padding: 8px;
+  font-size: 25px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+input[type='password'] {
   width: 80%;
   padding: 8px;
   font-size: 25px;
