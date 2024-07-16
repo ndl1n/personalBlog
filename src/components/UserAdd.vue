@@ -3,56 +3,76 @@
     <div class="title">
       <h2>新增</h2>
     </div>
-    <div class="info-container">
-      <div class="info-item" v-for="(label, key) in labels" :key="key">
-        <label :for="key">{{ label }}</label>
-        <input type="text" :id="key" v-model="registerInfo[key]" :placeholder="label" />
+    <form @submit.prevent="addUser">
+      <div class="info-container">
+        <div class="info-item" v-for="(label, key) in labels" :key="key">
+          <label :for="key">{{ label }}</label>
+          <input type="text" :id="key" v-model="user[key]" :placeholder="label" />
+        </div>
       </div>
-    </div>
-    <div class="buttons">
-      <button class="register-button" @click="register">確定</button>
-      <button class="cancel-button" @click="goToHome">取消</button>
-    </div>
+      <div class="buttons">
+        <button class="register-button" type="submit" :disabled="isFormInvalid">確定</button>
+        <button class="cancel-button" @click="goToUserDirectory">取消</button>
+      </div>
+    </form>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 
 export default defineComponent({
   name: 'AddForm',
+  data() {
+    return {
+      user: {
+        name: '',
+        account: '',
+        email: '',
+        phonenum: ''
+      }
+    }
+  },
+  computed: {
+    isFormInvalid() {
+      return !this.user.name || !this.user.account || !this.user.email || !this.user.phonenum
+    }
+  },
   setup() {
-    const registerInfo = reactive({
-      name: '',
-      account: '',
-      email: '',
-      phone: ''
-    })
-
     const labels = {
       name: '姓名',
       account: '帳號',
       email: '電子郵件',
-      phone: '手機號碼'
+      phonenum: '手機號碼'
     }
 
     const router = useRouter()
 
-    const goToHome = () => {
-      router.push('/')
-    }
-
-    const register = () => {
-      // 註冊功能的邏輯
-      console.log('註冊資料', registerInfo)
+    const goToUserDirectory = () => {
+      router.push('/user-directory')
     }
 
     return {
-      registerInfo,
       labels,
-      goToHome,
-      register
+      goToUserDirectory
+    }
+  },
+  methods: {
+    async addUser() {
+      try {
+        const response = await axios.post('http://localhost:8080/api/users', this.user)
+        console.log('User added:', response.data)
+        // 清空表單
+        this.user.name = ''
+        this.user.account = ''
+        this.user.email = ''
+        this.user.phonenum = ''
+        this.goToUserDirectory()
+      } catch (error) {
+        console.error('Error adding user:', error)
+      }
     }
   }
 })

@@ -6,53 +6,82 @@
     <div class="info-container">
       <div class="info-item" v-for="(label, key) in labels" :key="key">
         <label :for="key">{{ label }}</label>
-        <input type="text" :id="key" v-model="registerInfo[key]" :placeholder="label" />
+        <input type="text" :id="key" v-model="user[key]" :placeholder="label" />
       </div>
     </div>
     <div class="buttons">
-      <button class="register-button" @click="register">確定</button>
-      <button class="cancel-button" @click="goToHome">取消</button>
+      <button class="register-button" @click="updateUser">確定</button>
+      <button class="cancel-button" @click="goToUserDirectory">取消</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineComponent } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import axios from 'axios'
+
+interface User {
+  id: number
+  name: string
+  account: string
+  email: string
+  phonenum: string
+}
 
 export default defineComponent({
   name: 'UpdateForm',
+  data() {
+    return {
+      user: {} as User
+    }
+  },
   setup() {
-    const registerInfo = reactive({
-      name: '',
-      account: '',
-      email: '',
-      phone: ''
-    })
-
     const labels = {
       name: '姓名',
       account: '帳號',
       email: '電子郵件',
-      phone: '手機號碼'
+      phonenum: '手機號碼'
     }
 
     const router = useRouter()
+    const route = useRoute()
 
-    const goToHome = () => {
-      router.push('/')
-    }
-
-    const register = () => {
-      // 註冊功能的邏輯
-      console.log('註冊資料', registerInfo)
+    const goToUserDirectory = () => {
+      router.push('/user-directory')
     }
 
     return {
-      registerInfo,
       labels,
-      goToHome,
-      register
+      goToUserDirectory,
+      route
+    }
+  },
+  created() {
+    this.fetchSingleUser()
+  },
+  methods: {
+    async fetchSingleUser() {
+      const id = this.$route.params.id
+      try {
+        const response = await axios.get(`http://localhost:8080/api/users/${id}`)
+        this.user = response.data
+      } catch (error) {
+        console.error('Error fetching user:', error)
+      }
+    },
+    async updateUser() {
+      try {
+        const response = await axios.put(
+          `http://localhost:8080/api/users/${this.user.id}`,
+          this.user
+        )
+        console.log('User updated:', response.data)
+        // 更新後跳轉
+        this.goToUserDirectory()
+      } catch (error) {
+        console.error('Error updating user:', error)
+      }
     }
   }
 })

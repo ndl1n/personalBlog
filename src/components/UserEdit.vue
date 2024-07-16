@@ -20,11 +20,11 @@
             <td>{{ user.name }}</td>
             <td>{{ user.account }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ user.phone }}</td>
+            <td>{{ user.phonenum }}</td>
             <td>
               <div class="buttons">
-                <button class="update-button" @click="goToUpdate()">Update</button>
-                <button class="delete-button" @click="deleteUser(index)">Delete</button>
+                <button class="update-button" @click="goToUpdate(user.id)">Update</button>
+                <button class="delete-button" @click="deleteUser(user.id)">Delete</button>
               </div>
             </td>
           </tr>
@@ -38,50 +38,21 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 
 interface User {
+  id: number
   name: string
   account: string
   email: string
-  phone: string
+  phonenum: string
 }
 
 export default defineComponent({
   name: 'UserDirectory',
   data() {
     return {
-      users: [
-        {
-          name: 'Leslie Andy',
-          account: 'lesli123',
-          email: 'leslie@luv2code.com',
-          phone: '1234567890'
-        },
-        {
-          name: 'Emma Baumgarten',
-          account: 'emma1234',
-          email: 'emma@luv2code.com',
-          phone: '1234567891'
-        },
-        {
-          name: 'Avani Gupta',
-          account: 'avani123',
-          email: 'avani@luv2code.com',
-          phone: '1234567892'
-        },
-        {
-          name: 'Alex Lin',
-          account: 'alex1234',
-          email: 'alex@luv2code.com',
-          phone: '1234567893'
-        },
-        {
-          name: 'Yuri Petrov',
-          account: 'yuri1234',
-          email: 'yuri@luv2code.com',
-          phone: '1234567894'
-        }
-      ] as User[]
+      users: [] as User[]
     }
   },
   setup() {
@@ -91,8 +62,8 @@ export default defineComponent({
       router.push('/')
     }
 
-    const goToUpdate = () => {
-      router.push('/user-update')
+    const goToUpdate = (id: number) => {
+      router.push(`/user-update/${id}`)
     }
 
     const goToAdd = () => {
@@ -101,9 +72,33 @@ export default defineComponent({
 
     return { goToHome, goToAdd, goToUpdate }
   },
+  created() {
+    this.fetchUsers()
+  },
   methods: {
-    deleteUser(index: number) {
-      this.users.splice(index, 1)
+    async fetchUsers() {
+      try {
+        const response = await axios.get('http://localhost:8080/api/users')
+        this.users = response.data
+        console.log('Users:', this.users)
+      } catch (error) {
+        console.error('Error fetching users:', error)
+      }
+    },
+    async deleteUser(id: number) {
+      const confirmed = window.confirm('確定要刪除這位用戶嗎？')
+
+      if (confirmed) {
+        try {
+          const response = await axios.delete(`http://localhost:8080/api/users/${id}`)
+          console.log('User deleted:', response.data)
+          this.fetchUsers()
+        } catch (error) {
+          console.error('Error deleting user:', error)
+        }
+      } else {
+        console.log('刪除動作已取消')
+      }
     }
   }
 })
