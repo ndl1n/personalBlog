@@ -15,7 +15,7 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/register', component: Register },
   { path: '/user-directory', component: UserDirectory },
   { path: '/user-add', component: UserAdd },
-  { path: '/user-update', component: UserUpdate }
+  { path: '/user-update/:id', component: UserUpdate }
 ]
 
 const router = createRouter({
