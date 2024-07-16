@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 
@@ -72,6 +72,23 @@ export default defineComponent({
     },
     async updateUser() {
       try {
+        const errorMessage = ref('')
+        // 手機號碼檢查
+        const phonePattern = /^09\d{8}$/
+        if (!phonePattern.test(this.user.phonenum)) {
+          errorMessage.value = '手機號碼須為09開頭，且十位數'
+          alert(errorMessage.value)
+          return
+        }
+
+        // 帳號檢查
+        const accountPattern = /^[a-zA-Z0-9]{8}$/
+        if (!accountPattern.test(this.user.account)) {
+          errorMessage.value = '帳號必須為8位數，且僅由英文和數字組成'
+          alert(errorMessage.value)
+          return
+        }
+
         const response = await axios.put(
           `http://localhost:8080/api/users/${this.user.id}`,
           this.user

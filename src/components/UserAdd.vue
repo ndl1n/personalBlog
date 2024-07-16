@@ -3,11 +3,16 @@
     <div class="title">
       <h2>新增</h2>
     </div>
-    <form @submit.prevent="addUser">
+    <form @submit.prevent="register">
       <div class="info-container">
         <div class="info-item" v-for="(label, key) in labels" :key="key">
           <label :for="key">{{ label }}</label>
-          <input type="text" :id="key" v-model="user[key]" :placeholder="label" />
+          <input
+            :type="key === 'password' ? 'password' : 'text'"
+            :id="key"
+            v-model="user[key]"
+            :placeholder="label"
+          />
         </div>
       </div>
       <div class="buttons">
@@ -19,9 +24,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 export default defineComponent({
   name: 'AddForm',
@@ -56,25 +61,69 @@ export default defineComponent({
       router.push('/user-directory')
     }
 
+    const goToLogin = () => {
+      router.push('/login')
+    }
+
     return {
       labels,
-      goToUserDirectory
+      goToUserDirectory,
+      goToLogin
     }
   },
   methods: {
-    async addUser() {
+    async register() {
+      const errorMessage = ref('')
       try {
-        const response = await axios.post('http://localhost:8080/api/users', this.user)
-        console.log('User added:', response.data)
-        // 清空表單
-        this.user.name = ''
-        this.user.account = ''
-        this.user.password = ''
-        this.user.email = ''
-        this.user.phonenum = ''
-        this.goToUserDirectory()
+        // 密碼長度檢查
+        if (this.user.password.length < 6) {
+          errorMessage.value = '密碼長度需大於 6'
+          alert(errorMessage.value)
+          return
+        }
+
+        // 手機號碼檢查
+        const phonePattern = /^09\d{8}$/
+        if (!phonePattern.test(this.user.phonenum)) {
+          errorMessage.value = '手機號碼須為09開頭，且十位數'
+          alert(errorMessage.value)
+          return
+        }
+
+        // 帳號檢查
+        const accountPattern = /^[a-zA-Z0-9]{8}$/
+        if (!accountPattern.test(this.user.account)) {
+          errorMessage.value = '帳號必須為8位數，且僅由英文和數字組成'
+          alert(errorMessage.value)
+          return
+        }
+
+        const response = await axios.post('http://localhost:8080/api/register', this.user)
+        if (response.status === 201) {
+          console.log('註冊成功', response.data)
+
+          errorMessage.value = ''
+
+          this.user.name = ''
+          this.user.account = ''
+          this.user.password = ''
+          this.user.email = ''
+          this.user.phonenum = ''
+
+          this.goToLogin()
+        } else {
+          errorMessage.value = '註冊失敗，請稍後再試'
+          alert(errorMessage.value)
+        }
       } catch (error) {
-        console.error('Error adding user:', error)
+        const axiosError = error as AxiosError
+        if (axiosError.response && axiosError.response.status === 409) {
+          errorMessage.value = '帳號已經存在'
+        } else {
+          errorMessage.value = '註冊失敗，請稍後再試'
+        }
+        console.error('註冊錯誤', error)
+        alert(errorMessage.value)
       }
     }
   }
@@ -117,6 +166,14 @@ export default defineComponent({
 }
 
 input[type='text'] {
+  width: 80%;
+  padding: 8px;
+  font-size: 18px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+input[type='password'] {
   width: 80%;
   padding: 8px;
   font-size: 18px;
