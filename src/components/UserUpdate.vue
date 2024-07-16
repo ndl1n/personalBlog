@@ -73,6 +73,7 @@ export default defineComponent({
     async updateUser() {
       try {
         const errorMessage = ref('')
+
         // 手機號碼檢查
         const phonePattern = /^09\d{8}$/
         if (!phonePattern.test(this.user.phonenum)) {
@@ -94,6 +95,7 @@ export default defineComponent({
           this.user
         )
         console.log('User updated:', response.data)
+
         // 更新後跳轉
         this.goToUserDirectory()
       } catch (error) {

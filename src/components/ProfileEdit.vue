@@ -55,7 +55,7 @@ export default defineComponent({
   },
   methods: {
     editField(field: keyof MemberInfo): void {
-      // 實現編輯功能的邏輯
+      // 編輯功能的邏輯
       console.log(`Editing ${field}`)
     }
   }

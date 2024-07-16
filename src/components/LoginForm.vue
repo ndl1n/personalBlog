@@ -65,12 +65,13 @@ export default defineComponent({
 
         // 登入成功後的處理
         console.log('登入成功', response.data)
+
         // alert('登入成功')
         this.goToHome()
       } catch (error) {
         const axiosError = error as AxiosError
         if (axiosError.response) {
-          // 依據後端回傳的狀態碼顯示錯誤訊息
+          // 依據後端回傳的status顯示錯誤訊息
           if (axiosError.response.status === 404) {
             alert('帳號不存在')
           } else if (axiosError.response.status === 401) {
