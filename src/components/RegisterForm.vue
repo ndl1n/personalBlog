@@ -28,8 +28,8 @@ export default defineComponent({
       account: '',
       // password: '',
       email: '',
-      phone: '',
-      address: ''
+      phone: ''
+      // address: ''
     })
 
     const labels = {
@@ -37,8 +37,8 @@ export default defineComponent({
       account: '帳號',
       // password: '密碼',
       email: '電子郵件',
-      phone: '手機號碼',
-      address: '通訊地址'
+      phone: '手機號碼'
+      // address: '通訊地址'
     }
 
     const router = useRouter()
