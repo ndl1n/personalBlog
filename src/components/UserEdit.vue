@@ -36,9 +36,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineComponent, ref } from 'vue'
 import axios from 'axios'
+import { useNavigation } from '@/composables/useNavigation'
 
 interface User {
   id: number
@@ -50,55 +50,43 @@ interface User {
 
 export default defineComponent({
   name: 'UserDirectory',
-  data() {
-    return {
-      users: [] as User[]
-    }
-  },
   setup() {
-    const router = useRouter()
+    const users = ref<User[]>([])
+    const { goToHome, goToUpdate, goToAdd } = useNavigation()
 
-    const goToHome = () => {
-      router.push('/')
-    }
-
-    const goToUpdate = (id: number) => {
-      router.push(`/user-update/${id}`)
-    }
-
-    const goToAdd = () => {
-      router.push('/user-add')
-    }
-
-    return { goToHome, goToAdd, goToUpdate }
-  },
-  created() {
-    this.fetchUsers()
-  },
-  methods: {
-    async fetchUsers() {
+    const fetchUsers = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/users')
-        this.users = response.data
-        console.log('Users:', this.users)
+        users.value = response.data
+        console.log('Users:', users.value)
       } catch (error) {
         console.error('Error fetching users:', error)
       }
-    },
-    async deleteUser(id: number) {
-      const confirmed = window.confirm('確定要刪除這位用戶嗎？')
+    }
 
-      if (confirmed) {
+    const deleteUser = async (id: number) => {
+      if (window.confirm('確定要刪除這位用戶嗎？')) {
         try {
-          const response = await axios.delete(`http://localhost:8080/api/users/${id}`)
-          console.log('User deleted:', response.data)
-          this.fetchUsers()
+          await axios.delete(`http://localhost:8080/api/users/${id}`)
+          console.log('User deleted')
+          fetchUsers()
         } catch (error) {
           console.error('Error deleting user:', error)
         }
       } else {
         console.log('刪除動作已取消')
       }
+    }
+
+    // 在組件創建時獲取用戶
+    fetchUsers()
+
+    return {
+      users,
+      goToHome,
+      goToAdd,
+      goToUpdate,
+      deleteUser
     }
   }
 })

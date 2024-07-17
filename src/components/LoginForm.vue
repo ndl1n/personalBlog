@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="buttons">
-        <button class="register-button" type="submit" :disabled="isFormInvalid">確定</button>
+        <button class="login-button" type="submit" :disabled="isFormInvalid">確定</button>
         <button class="cancel-button" @click="goToHome">取消</button>
       </div>
     </form>
@@ -25,8 +25,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 import axios, { AxiosError } from 'axios'
+import { useNavigation } from '@/composables/useNavigation'
 
 export default defineComponent({
   name: 'LoginForm',
@@ -46,11 +46,7 @@ export default defineComponent({
       password: '密碼'
     }
 
-    const router = useRouter()
-
-    const goToHome = () => {
-      router.push('/')
-    }
+    const { goToHome } = useNavigation()
 
     return {
       loginInfo,
@@ -126,14 +122,7 @@ export default defineComponent({
   flex: 1;
 }
 
-input[type='text'] {
-  width: 80%;
-  padding: 8px;
-  font-size: 25px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
+input[type='text'],
 input[type='password'] {
   width: 80%;
   padding: 8px;
@@ -149,7 +138,7 @@ input[type='password'] {
   margin-top: 10%;
 }
 
-.register-button,
+.login-button,
 .cancel-button {
   width: 200px;
   padding: 15px 30px;
@@ -160,12 +149,12 @@ input[type='password'] {
   transition: background-color 0.3s ease;
 }
 
-.register-button {
+.login-button {
   background-color: orange;
   color: white;
 }
 
-.register-button:hover {
+.login-button:hover {
   background-color: darkorange;
 }
 

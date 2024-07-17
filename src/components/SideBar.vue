@@ -34,7 +34,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { useRouter } from 'vue-router'
+import { useNavigation } from '@/composables/useNavigation'
 
 export default defineComponent({
   name: 'SideBar',
@@ -48,27 +48,7 @@ export default defineComponent({
     }
   },
   setup() {
-    const router = useRouter()
-
-    const goToHome = () => {
-      router.push('/')
-    }
-
-    const goToProfile = () => {
-      router.push('/profile')
-    }
-
-    const goToLogin = () => {
-      router.push('/login')
-    }
-
-    const goToRegister = () => {
-      router.push('/register')
-    }
-
-    const goToUserDirectory = () => {
-      router.push('/user-directory')
-    }
+    const { goToHome, goToProfile, goToLogin, goToRegister, goToUserDirectory } = useNavigation()
 
     return {
       goToHome,
