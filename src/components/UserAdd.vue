@@ -27,6 +27,8 @@
 import { defineComponent, ref } from 'vue'
 import axios, { AxiosError } from 'axios'
 import { useNavigation } from '@/composables/useNavigation'
+import { validatePassword, validatePhoneNumber, validateAccount } from '@/utils/validators'
+import { setErrorMessage } from '@/utils/errorHandler'
 
 export default defineComponent({
   name: 'AddForm',
@@ -88,23 +90,21 @@ export default defineComponent({
   methods: {
     async register() {
       try {
-        // 密碼長度檢查
-        if (this.user.password.length < 8) {
-          this.setErrorMessage('密碼長度需大於 8')
+        let errorMessage = validatePassword(this.user.password)
+        if (errorMessage) {
+          setErrorMessage(errorMessage)
           return
         }
 
-        // 手機號碼檢查
-        const phonePattern = /^09\d{8}$/
-        if (!phonePattern.test(this.user.phonenum)) {
-          this.setErrorMessage('手機號碼須為09開頭，且十位數')
+        errorMessage = validatePhoneNumber(this.user.phonenum)
+        if (errorMessage) {
+          setErrorMessage(errorMessage)
           return
         }
 
-        // 帳號檢查
-        const accountPattern = /^[a-zA-Z0-9]{8}$/
-        if (!accountPattern.test(this.user.account)) {
-          this.setErrorMessage('帳號必須為8位數，且僅由英文和數字組成')
+        errorMessage = validateAccount(this.user.account)
+        if (errorMessage) {
+          setErrorMessage(errorMessage)
           return
         }
 
@@ -117,21 +117,17 @@ export default defineComponent({
 
           this.goToLogin()
         } else {
-          this.setErrorMessage('註冊失敗，請稍後再試')
+          setErrorMessage('註冊失敗，請稍後再試')
         }
       } catch (error) {
         const axiosError = error as AxiosError
         if (axiosError.response && axiosError.response.status === 409) {
-          this.setErrorMessage('帳號已經存在')
+          setErrorMessage('帳號已經存在')
         } else {
-          this.setErrorMessage('註冊失敗，請稍後再試')
+          setErrorMessage('註冊失敗，請稍後再試')
         }
         console.error('註冊錯誤', error)
       }
-    },
-    setErrorMessage(message: string) {
-      this.errorMessage = message
-      alert(this.errorMessage)
     }
   }
 })
