@@ -18,16 +18,14 @@
     </button>
     <button class="circle-button" @click="toggleMode">
       <div>
-        <font-awesome-icon v-if="mode === 'mode1'" icon="keyboard" class="mode-button" />
-      </div>
-      <div>
-        <font-awesome-icon
-          v-if="mode === 'mode2'"
-          icon="arrow-right-from-bracket"
-          class="mode-button"
-        />
+        <font-awesome-icon icon="keyboard" class="mode-button" />
       </div>
     </button>
+    <div v-if="mode === 'mode2'">
+      <button class="circle-button" @click="handleClick">
+        <font-awesome-icon icon="arrow-right-from-bracket" class="mode-button" />
+      </button>
+    </div>
   </div>
 </template>
 
@@ -35,6 +33,7 @@
 import { defineComponent } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useNavigation } from '@/composables/useNavigation'
+import { useUserStore } from '../stores/userStore'
 
 export default defineComponent({
   name: 'SideBar',
@@ -47,20 +46,32 @@ export default defineComponent({
       required: true
     }
   },
-  setup() {
+  setup(props, { emit }) {
     const { goToHome, goToProfile, goToLogin, goToRegister, goToUserDirectory } = useNavigation()
+    const userStore = useUserStore()
+    const clearUser = () => {
+      userStore.clearUser()
+      console.log('User data after clearing:', userStore.userInfo)
+    }
+
+    const toggleMode = () => {
+      emit('toggleMode')
+    }
+
+    const handleClick = () => {
+      toggleMode()
+      clearUser()
+    }
 
     return {
       goToHome,
       goToProfile,
       goToLogin,
       goToRegister,
-      goToUserDirectory
-    }
-  },
-  methods: {
-    toggleMode() {
-      this.$emit('toggleMode')
+      goToUserDirectory,
+      clearUser,
+      toggleMode,
+      handleClick
     }
   }
 })
