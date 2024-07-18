@@ -21,6 +21,8 @@ import { defineComponent, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { useNavigation } from '@/composables/useNavigation'
+import { validatePhoneNumber, validateAccount } from '@/utils/validators'
+import { setErrorMessage } from '@/utils/errorHandler'
 
 interface User {
   id: number
@@ -56,15 +58,16 @@ export default defineComponent({
     }
 
     const validateUser = () => {
-      const phonePattern = /^09\d{8}$/
-      if (!phonePattern.test(user.value.phonenum)) {
-        errorMessage.value = '手機號碼須為09開頭，且十位數'
+      const phoneError = validatePhoneNumber(user.value.phonenum)
+      const accountError = validateAccount(user.value.account)
+
+      if (phoneError) {
+        errorMessage.value = phoneError
         return false
       }
 
-      const accountPattern = /^[a-zA-Z0-9]{8}$/
-      if (!accountPattern.test(user.value.account)) {
-        errorMessage.value = '帳號必須為8位數，且僅由英文和數字組成'
+      if (accountError) {
+        errorMessage.value = accountError
         return false
       }
 
@@ -74,7 +77,7 @@ export default defineComponent({
 
     const updateUser = async () => {
       if (!validateUser()) {
-        alert(errorMessage.value)
+        setErrorMessage(errorMessage.value)
         return
       }
 
