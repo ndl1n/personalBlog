@@ -90,21 +90,18 @@ export default defineComponent({
   methods: {
     async register() {
       try {
-        // 密碼檢查
         let errorMessage = validatePassword(this.user.password)
         if (errorMessage) {
           setErrorMessage(errorMessage)
           return
         }
 
-        // 手機號碼檢查
         errorMessage = validatePhoneNumber(this.user.phonenum)
         if (errorMessage) {
           setErrorMessage(errorMessage)
           return
         }
 
-        // 帳號檢查
         errorMessage = validateAccount(this.user.account)
         if (errorMessage) {
           setErrorMessage(errorMessage)
