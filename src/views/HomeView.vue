@@ -117,7 +117,7 @@ import InfoHeader from '../components/InfoHeader.vue'
 import InfoExpertise from '../components/InfoExpertise.vue'
 
 export default defineComponent({
-  name: 'ResumeComponent',
+  name: 'HomeView',
   components: {
     DirectoryNav,
     ArchiveNav,
