@@ -12,6 +12,7 @@
             <th>帳號</th>
             <th>電子郵件</th>
             <th>電話號碼</th>
+            <th>地址</th>
             <th></th>
           </tr>
         </thead>
@@ -21,6 +22,7 @@
             <td>{{ user.account }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.phonenum }}</td>
+            <td>{{ user.address }}</td>
             <td>
               <div class="buttons">
                 <button class="update-button" @click="goToUpdate(user.id)">Update</button>
@@ -46,6 +48,7 @@ interface User {
   account: string
   email: string
   phonenum: string
+  address: string
 }
 
 export default defineComponent({

@@ -37,13 +37,20 @@ export default defineComponent({
         account: '',
         password: '',
         email: '',
-        phonenum: ''
+        phonenum: '',
+        address: ''
       }
     }
   },
   computed: {
     isFormInvalid() {
-      return !this.user.name || !this.user.account || !this.user.email || !this.user.phonenum
+      return (
+        !this.user.name ||
+        !this.user.account ||
+        !this.user.email ||
+        !this.user.phonenum ||
+        !this.user.address
+      )
     }
   },
   setup() {
@@ -52,7 +59,8 @@ export default defineComponent({
       account: '帳號',
       password: '密碼',
       email: '電子郵件',
-      phonenum: '手機號碼'
+      phonenum: '手機號碼',
+      address: '地址'
     }
 
     const { goToUserDirectory, goToLogin } = useNavigation()
@@ -64,7 +72,8 @@ export default defineComponent({
         account: '',
         password: '',
         email: '',
-        phonenum: ''
+        phonenum: '',
+        address: ''
       }
     }
 

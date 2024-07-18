@@ -27,6 +27,7 @@
 import { defineComponent, reactive } from 'vue'
 import axios, { AxiosError } from 'axios'
 import { useNavigation } from '@/composables/useNavigation'
+import { useUserStore } from '@/stores/userStore'
 
 export default defineComponent({
   name: 'LoginForm',
@@ -57,10 +58,16 @@ export default defineComponent({
   methods: {
     async login() {
       try {
-        const response = await axios.post('http://localhost:8080/api/login', this.loginInfo)
+        const loginResponse = await axios.post('http://localhost:8080/api/login', this.loginInfo)
 
         // 登入成功後的處理
-        console.log('登入成功', response.data)
+        console.log('登入成功', loginResponse.data)
+
+        // 取得該帳號的資料後存入store
+        const userStore = useUserStore()
+        const response = await axios.get(`http://localhost:8080/api/users/${loginResponse.data.id}`)
+
+        userStore.setUser(response.data)
 
         // alert('登入成功')
         this.goToHome()

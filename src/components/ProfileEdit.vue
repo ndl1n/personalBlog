@@ -7,7 +7,7 @@
       <div class="info-item" v-for="(value, key) in memberInfo" :key="key">
         <span class="label">{{ labels[key] }}</span>
         <span class="value">{{ value }}</span>
-        <span class="edit" @click="editField(key)">編輯</span>
+        <!-- <span class="edit" @click="editField(key)">編輯</span> -->
       </div>
     </div>
   </div>
@@ -15,48 +15,29 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-
-interface MemberInfo {
-  name: string
-  account: string
-  password: string
-  email: string
-  phone: string
-  birthday: string
-  address: string
-}
+import { useUserStore } from '../stores/userStore'
 
 interface Labels {
   [key: string]: string
 }
 
 export default defineComponent({
-  data() {
-    return {
-      memberInfo: {
-        name: '林子安',
-        account: 'andy6137',
-        password: '未設定',
-        email: 'a0938391667@gmail.com',
-        phone: '0938391667',
-        birthday: '2003-03-29',
-        address: '桃園市桃園區實山街185-1號'
-      } as MemberInfo,
-      labels: {
-        name: '姓名',
-        account: '帳號',
-        password: '密碼',
-        email: '電子郵件',
-        phone: '手機號碼',
-        birthday: '生日',
-        address: '通訊地址'
-      } as Labels
+  setup() {
+    const userStore = useUserStore()
+
+    const labels: Labels = {
+      name: '姓名',
+      account: '帳號',
+      email: '電子郵件',
+      phonenum: '手機號碼',
+      address: '地址'
     }
-  },
-  methods: {
-    editField(field: keyof MemberInfo): void {
-      // 編輯功能的邏輯
-      console.log(`Editing ${field}`)
+
+    console.log('userInfo:', userStore.userInfo)
+
+    return {
+      memberInfo: userStore.userInfo,
+      labels
     }
   }
 })
@@ -80,7 +61,7 @@ export default defineComponent({
 }
 
 .info-container {
-  padding: 20px;
+  padding: 25px;
 }
 
 .info-item {
@@ -89,7 +70,7 @@ export default defineComponent({
   margin-bottom: 15px;
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .label {
