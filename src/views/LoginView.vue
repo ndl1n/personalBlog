@@ -28,6 +28,7 @@ import { defineComponent, reactive } from 'vue'
 import axios, { AxiosError } from 'axios'
 import { useNavigation } from '@/composables/useNavigation'
 import { useUserStore } from '@/stores/userStore'
+import { setErrorMessage } from '@/utils/errorHandler'
 
 export default defineComponent({
   name: 'LoginView',
@@ -60,7 +61,6 @@ export default defineComponent({
       try {
         const loginResponse = await axios.post('http://localhost:8080/api/login', this.loginInfo)
 
-        // 登入成功後的處理
         console.log('登入成功', loginResponse.data)
 
         // 取得該帳號的資料後存入store
@@ -69,21 +69,20 @@ export default defineComponent({
 
         userStore.setUser(response.data)
 
-        // alert('登入成功')
         this.goToHome()
       } catch (error) {
         const axiosError = error as AxiosError
         if (axiosError.response) {
           // 依據後端回傳的status顯示錯誤訊息
           if (axiosError.response.status === 404) {
-            alert('帳號不存在')
+            setErrorMessage('帳號不存在')
           } else if (axiosError.response.status === 401) {
-            alert('密碼錯誤')
+            setErrorMessage('密碼錯誤')
           } else {
-            alert('登入失敗，請稍後再試')
+            setErrorMessage('登入失敗，請稍後再試')
           }
         } else {
-          alert('登入失敗，請稍後再試')
+          setErrorMessage('登入失敗，請稍後再試')
         }
         console.error('登入錯誤', error)
       }
